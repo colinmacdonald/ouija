@@ -7,6 +7,7 @@ var gulp            = require('gulp'),
     async           = require('async'),
     Hipchat         = require('node-hipchat'),
     GitHubApi       = require('github'),
+    semver          = require('semver'),
     config          = {},
     pathTo,
 
@@ -157,14 +158,14 @@ gulp.task('deploy', ['publish'], function(cb) {
     });
 
     async.parallel(tasks, function(err, results) {
+        err = null; // hipchat api callback signature doesn't include the err
+
         _.each(results, function(result) {
-        err = null; // hipchat api callback signature doesn't include err
+            if (result && result.status !== 'sent') {
+                err = new Error('Error: ' + ERROR_HC);
 
-        if (result && result.status !== 'sent') {
-            err = new Error('Error: ' + ERROR_HC);
-
-            return false;
-        }
+                return false;
+            }
         });
 
         cb(err);
@@ -191,22 +192,16 @@ gulp.task('publish', ['globals', 'build'], function() {
             path.dirname = GLOBALS.cdnVersion;
         }))
         .pipe(publisher.publish())
-        .pipe(plugins.notify({
-            message: 'Deployed ' + TAG + ' to ' + GLOBALS.env
-        }))
+        .pipe(plugins.notify({ message: 'Deployed ' + TAG + ' to ' + GLOBALS.env }))
         .pipe(gulp.src(pathTo.dist + '*')) // awspublish confused using existing stream
         .pipe(plugins.ifElse(GLOBALS.isLatest, function() {
-            return plugins.rename(function(path) {
-                path.dirname = GLOBALS.cdnLatest;
-            });
+            return plugins.rename(function(path) { path.dirname = GLOBALS.cdnLatest; });
         }))
         .pipe(plugins.ifElse(GLOBALS.isLatest, function() {
             return publisher.publish();
         }))
         .pipe(plugins.ifElse(GLOBALS.isLatest, function() {
-            return plugins.notify({
-                message: 'Deployed ' + LATEST + ' to ' + GLOBALS.env
-            });
+            return plugins.notify({ message: 'Deployed ' + LATEST + ' to ' + GLOBALS.env });
         }));
 });
 
@@ -226,9 +221,8 @@ function isLatest(cb) {
             return cb(err);
         }
 
-        tags.sort(function(a, b) {
-            return a.name < b.name;
-        });
+        tags = _.flatten(tags, 'name');
+        tags = tags.sort(semver.rcompare);
 
         var latest = tags[0].name;
         var result = TAG === latest ? true : false;
