@@ -224,6 +224,7 @@ function isLatest(cb) {
         var latest = tags[0];
         var result = TAG === latest ? true : false;
 
+        console.log('RESULT', result);
         cb(null, result);
     });
 }
@@ -247,6 +248,7 @@ gulp.task('globals', function(cb) {
 
         GLOBALS.isLatest = isLatest;
 
+        console.log(GLOBALS.isLatest);
         cb();
     });
 });
