@@ -53,8 +53,8 @@ pathTo = {
     })
 };
 
-gulp.task('build', ['clean'], function () {
-    gulp.src(pathTo.styles)
+gulp.task('styles', function() {
+    return gulp.src(pathTo.styles)
         .pipe(plugins.sass({
             includePaths: require('node-bourbon').includePaths
         }))
@@ -63,8 +63,10 @@ gulp.task('build', ['clean'], function () {
         .pipe(plugins.minifyCss({ keepBreaks:true }))
         .pipe(plugins.rename('ouija.min.css'))
         .pipe(gulp.dest(pathTo.dist));
+});
 
-    gulp.src(pathTo.entry)
+gulp.task('scripts', function() {
+    return gulp.src(pathTo.entry)
         .pipe(plugins.browserify({
             insertGlobals : false,
             debug: false
@@ -74,7 +76,10 @@ gulp.task('build', ['clean'], function () {
         .pipe(plugins.uglify({ mangle: false }))
         .pipe(plugins.rename('ouija.min.js'))
         .pipe(gulp.dest(pathTo.dist));
+
 });
+
+gulp.task('build', ['clean', 'styles', 'scripts']);
 
 gulp.task('develop', ['sass'], function () {
     gulp.src(pathTo.entry)
@@ -119,8 +124,6 @@ gulp.task('clean', function() {
 });
 
 gulp.task('deploy', ['publish'], function(cb) {
-    console.log('GLOBALS', GLOBALS);
-
     if (!GLOBALS.env) {
         return;
     }
@@ -183,19 +186,11 @@ gulp.task('publish', ['globals', 'build'], function() {
         bucket: GLOBALS.bucket
     });
 
-    var headers = {
-        ContentType: 'application/javascript'
-    };
-
-    var opts = {
-        force: true
-    };
-
     return gulp.src(pathTo.dist + '*')
         .pipe(plugins.rename(function(path) {
             path.dirname = GLOBALS.cdnVersion;
         }))
-        .pipe(publisher.publish(headers, opts))
+        .pipe(publisher.publish())
         .pipe(plugins.notify({
             message: 'Deployed ' + TAG + ' to ' + GLOBALS.env
         }))
@@ -206,7 +201,7 @@ gulp.task('publish', ['globals', 'build'], function() {
             });
         }))
         .pipe(plugins.ifElse(GLOBALS.isLatest, function() {
-            return publisher.publish(headers, opts);
+            return publisher.publish();
         }))
         .pipe(plugins.ifElse(GLOBALS.isLatest, function() {
             return plugins.notify({
