@@ -19,8 +19,10 @@ var gulp            = require('gulp'),
     TAG             = process.env.TRAVIS_TAG || null,
     NAMESPACE       = process.env.GOINSTANT_NAMESPACE,
 
-    BUCKET_PROD     = 'cdn.goinstant.net',
-    BUCKET_STAGING  = 'cdn.platform-staging.goinstant.org',
+    //BUCKET_PROD     = 'cdn.goinstant.net',
+    //BUCKET_STAGING  = 'cdn.platform-staging.goinstant.org',
+    BUCKET_PROD = 'cmac-production',
+    BUCKET_STAGING = 'cmac-staging',
     LATEST          = 'latest',
     GLOBALS         = {},
     STAGING_REGEX   = /^v\d+.\d+.\d+-rc$/i,
@@ -118,7 +120,6 @@ gulp.task('clean', function() {
 
 gulp.task('deploy', ['publish'], function(cb) {
     console.log('GLOBALS', GLOBALS);
-    console.log('TAG', TAG);
 
     if (!GLOBALS.env) {
         return;

@@ -17,7 +17,7 @@ notifications:
     format: html
 env:
   global:
-  - namespace: 'external'
+  - GOINSTANT_NAMESPACE: 'external'
   - secure: HpaInFqzg9P5bPVrcbZyR7MsVeWNV/y7bX47jPCFdHkFcZxWcHU5t0ct3LwhlXCWzYPlhOR+frOiHaaPZYVH2NomcYHrtI+Uro1BqfnneKxpQx8Ns0VK83EvKyGyf1hQ7kl8NqAfB3o8tl4dhsSVQT8K2QZzPYlduP40moOUzJI=
   - secure: ABZXu/iUaXgeoG4AEMYMmRO1zFRjlsQgDpYH8HVnalQW970jdQh0+4ehiUUedUoSKr5s1wrtMZXgZiiHKbUyUB49/5eLM3uKbdBi0II3L9n8CqaHqg0oGERwNfxgmmRkAUrhh5NlWoXKlnyojruq2pft2r2SJXAyX7cQLTGZ03M=
   - secure: YmrRHUmCYMol0ZRA6m2TcR2v/HZMwOaIVlFtZtQlHB/WCmncymHO34yPsGzI+bVNFnd/HB4jvtNu0wNDvNvhFz37mIbJ1o/m3pSbBFn9r9nxnP4ULI4ObHE45xXVRCSRShXNCpXE+/RGWDTeq69MjwpwcG4WSyln+/I3aWQMc6w=
