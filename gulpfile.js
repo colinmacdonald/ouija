@@ -117,6 +117,9 @@ gulp.task('clean', function() {
 });
 
 gulp.task('deploy', ['publish'], function(cb) {
+    console.log('GLOBALS', GLOBALS);
+    console.log('TAG', TAG);
+
     if (!GLOBALS.env) {
         return;
     }
