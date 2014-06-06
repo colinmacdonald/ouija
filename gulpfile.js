@@ -11,14 +11,14 @@ var gulp            = require('gulp'),
     config          = {},
     pathTo,
 
-    HIPCHAT_TOKEN   = process.env.HIPCHAT_TOKEN,
-    HIPCHAT_ROOMS   = process.env.HIPCHAT_ROOMS,
-    AWS_S3_ID       = process.env.AWS_S3_ID,
-    AWS_S3_SECRET   = process.env.AWS_S3_SECRET,
-    ACCOUNT         = process.env.TRAVIS_REPO_SLUG,
-    REPO            = process.env.TRAVIS_REPO_SLUG,
+    HIPCHAT_TOKEN   = process.env.HIPCHAT_TOKEN || null,
+    HIPCHAT_ROOMS   = process.env.HIPCHAT_ROOMS ? process.env.HIPCHAT_ROOMS.split(',') : null,
+    AWS_S3_ID       = process.env.AWS_S3_ID || null,
+    AWS_S3_SECRET   = process.env.AWS_S3_SECRET || null,
+    ACCOUNT         = process.env.TRAVIS_REPO_SLUG ? process.env.TRAVIS_REPO_SLUG.split('/')[0] : null,
+    REPO            = process.env.TRAVIS_REPO_SLUG ? process.env.TRAVIS_REPO_SLUG.split('/')[1] : null,
     TAG             = process.env.TRAVIS_TAG || null,
-    NAMESPACE       = process.env.GOINSTANT_NAMESPACE,
+    NAMESPACE       = process.env.GOINSTANT_NAMESPACE || null,
 
     //BUCKET_PROD     = 'cdn.goinstant.net',
     //BUCKET_STAGING  = 'cdn.platform-staging.goinstant.org',
@@ -131,12 +131,9 @@ gulp.task('deploy', ['publish'], function(cb) {
 
     var hipchat = new Hipchat(HIPCHAT_TOKEN);
 
-    var account = ACCOUNT.split('/')[0];
-    var repo = REPO.split('/')[1];
-
     var vars = {
-        account: account,
-        repo: repo,
+        account: ACCOUNT,
+        repo: REPO,
         cdn: 'https://' + GLOBALS.bucket + GLOBALS.cdnVersion,
         tag: TAG,
         latest: GLOBALS.isLatest ? '/latest' : null,
@@ -150,9 +147,8 @@ gulp.task('deploy', ['publish'], function(cb) {
     };
 
     var tasks = [];
-    var rooms = HIPCHAT_ROOMS.split(',');
 
-    _.each(rooms, function(room) {
+    _.each(HIPCHAT_ROOMS, function(room) {
         params.room = room.trim();
         tasks.push(_.bind(hipchat.postMessage, hipchat, params));
     });
@@ -215,10 +211,7 @@ function isLatest(cb) {
 
     var github = new GitHubApi(opts);
 
-    var account = ACCOUNT.split('/')[0];
-    var repo = REPO.split('/')[1];
-
-    github.repos.getTags({user: account, repo: repo }, function (err, tags) {
+    github.repos.getTags({user: ACCOUNT, repo: REPO }, function (err, tags) {
         if (err) {
             return cb(err);
         }
@@ -243,8 +236,11 @@ gulp.task('globals', function(cb) {
 
     GLOBALS.env = staging ? 'staging' : (prod) ? 'production' : tagDeploy;
     GLOBALS.bucket = GLOBALS.env === 'production' ? BUCKET_PROD : BUCKET_STAGING;
-    GLOBALS.cdnVersion = '/' + NAMESPACE + '/' + REPO + '/' + TAG + '/';
-    GLOBALS.cdnLatest = '/' + NAMESPACE + '/' + REPO + '/' + LATEST + '/';
+
+    var repo = REPO.split('/')[1];
+
+    GLOBALS.cdnVersion = '/' + NAMESPACE + '/' + repo + '/' + TAG + '/';
+    GLOBALS.cdnLatest = '/' + NAMESPACE + '/' + repo + '/' + LATEST + '/';
 
     isLatest(function(err, isLatest) {
         if (err) {
