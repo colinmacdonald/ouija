@@ -207,8 +207,7 @@ gulp.task('publish', ['globals', 'build'], function() {
             return plugins.notify({
                 message: 'Deployed ' + LATEST + ' to ' + GLOBALS.env
             });
-        }))
-        .on('error', plugins.util.log);
+        }));
 });
 
 function isLatest(cb) {

@@ -30,7 +30,7 @@
     "aws-sdk": "2.0.*",
     "emitter-component": "1.1.1",
     "github": "^0.1.16",
-    "gulp": "~3.6.1",
+    "gulp": "~3.7.0",
     "gulp-awspublish": "0.0.16",
     "gulp-browserify": "~0.5.0",
     "gulp-clean": "~0.2.4",
