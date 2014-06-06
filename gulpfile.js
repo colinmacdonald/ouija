@@ -173,6 +173,8 @@ gulp.task('deploy', ['publish'], function(cb) {
 });
 
 gulp.task('publish', ['globals', 'build'], function() {
+    console.log(GLOBALS);
+
     if (!GLOBALS.env) {
         throw new Error('Error: ' + ERROR_ENV);
     }
@@ -224,7 +226,9 @@ function isLatest(cb) {
         tags = _.flatten(tags, 'name');
         tags = tags.sort(semver.rcompare);
 
-        var latest = tags[0].name;
+        console.log('Tags List: \n', tags, '\n\nCurrent Tag: \n', TAG);
+
+        var latest = tags[0];
         var result = TAG === latest ? true : false;
 
         cb(null, result);
