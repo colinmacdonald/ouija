@@ -237,10 +237,8 @@ gulp.task('globals', function(cb) {
     GLOBALS.env = staging ? 'staging' : (prod) ? 'production' : tagDeploy;
     GLOBALS.bucket = GLOBALS.env === 'production' ? BUCKET_PROD : BUCKET_STAGING;
 
-    var repo = REPO.split('/')[1];
-
-    GLOBALS.cdnVersion = '/' + NAMESPACE + '/' + repo + '/' + TAG + '/';
-    GLOBALS.cdnLatest = '/' + NAMESPACE + '/' + repo + '/' + LATEST + '/';
+    GLOBALS.cdnVersion = '/' + NAMESPACE + '/' + REPO + '/' + TAG + '/';
+    GLOBALS.cdnLatest = '/' + NAMESPACE + '/' + REPO + '/' + LATEST + '/';
 
     isLatest(function(err, isLatest) {
         if (err) {
